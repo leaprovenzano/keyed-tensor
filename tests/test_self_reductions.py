@@ -42,10 +42,6 @@ def test_keyed_reduce(funcname):
 
     method = getattr(KeyedTensor, funcname)
     result = method(kt, dim='key')
-    print(kt.a)
-
-    print(result)
-    print(torchfunc(kt.a))
 
     assert result.a == torchfunc(kt.a)
     assert result.b == torchfunc(kt.b)

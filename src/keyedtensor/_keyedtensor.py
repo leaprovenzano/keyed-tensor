@@ -121,6 +121,14 @@ class KeyedTensor(AttyDict):
     def argmin(self, dim: Optional[DimT] = None, keepdim: bool = False):
         return self_reduction(self, torch.argmin, dim=dim, keepdim=keepdim)
 
+    @torchfunc_registry.register(torch.std)
+    def std(self, *args, **kwargs):
+        return self_reduction(self, torch.std, *args, **kwargs)
+
+    @torchfunc_registry.register(torch.norm)
+    def norm(self, p='fro', *args, **kwargs):
+        return self_reduction(self, torch.norm, *args, **kwargs, p=p)
+
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:
         return one_to_many(self, torch.unbind)
@@ -274,10 +282,6 @@ class KeyedTensor(AttyDict):
     def numel(self) -> 'KeyedTensor':
         return self._apply_out_of_place(torch.numel)
 
-    @torchfunc_registry.register(torch.norm)
-    def norm(self, p='fro', *args, **kwargs):
-        return self_reduction(self, torch.norm, *args, **kwargs, p=p)
-
     @torchfunc_registry.register(torch.polygamma)
     def polygamma(self, *args, **kwargs):
         return self_apply_with_args(self, torch.polygamma, *args, **kwargs)
@@ -337,10 +341,6 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.squeeze)
     def squeeze(self, *args, **kwargs) -> 'KeyedTensor':
         return self_apply_with_args(self, torch.squeeze, *args, **kwargs)
-
-    @torchfunc_registry.register(torch.std)
-    def std(self, *args, **kwargs):
-        return self_reduction(self, torch.std, *args, **kwargs)
 
     @torchfunc_registry.register(torch.t)
     def t(self, *args, **kwargs):

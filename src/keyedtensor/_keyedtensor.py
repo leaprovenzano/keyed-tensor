@@ -15,14 +15,12 @@ DimT = Union[Literal['keys'], int]
 # patterns
 
 
-def self_reduction(
-    kt: 'KeyedTensor', op, dim: Optional[DimT] = None, keepdim: bool = False, **kwargs
-):
+def self_reduction(kt: 'KeyedTensor', op, dim: Optional[DimT] = None, **kwargs):
     if dim is None:
-        return op(torch.stack(list(map(op, kt.values()))))
+        return op(torch.cat(list(map(torch.flatten, kt.values()))), **kwargs)
     elif dim == 'key':
-        return kt._apply_out_of_place(op)
-    return kt._apply_out_of_place(lambda x: op(x, dim=dim, keepdim=keepdim))
+        return kt._apply_out_of_place(lambda x: op(x, **kwargs))
+    return kt._apply_out_of_place(lambda x: op(x, dim=dim, **kwargs))
 
 
 def self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
@@ -78,35 +76,32 @@ class KeyedTensor(AttyDict):
         return self.any()
 
     @torchfunc_registry.register(torch.all)
-    def all(self, dim: Optional[DimT] = None, keepdim: bool = False):
+    def all(self, dim: Optional[DimT] = None, **kwargs):
         """Like torch.all but for keyed tensor. dim may optionally be a keyed
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
-            keepdim: whether the output tensor has :attr:`dim` retained or not. Defaults to False.
         """
-        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
+        return self_reduction(self, torch.any, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.any)
-    def any(self, dim: Optional[DimT] = None, keepdim: bool = False):
+    def any(self, dim: Optional[DimT] = None, **kwargs):
         """Like torch.any but for keyed tensor, dim may optionally be a keyed
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
-            keepdim: whether the output tensor has :attr:`dim` retained or not. Defaults to False.
         """
-        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
+        return self_reduction(self, torch.any, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.mean)
-    def mean(self, dim: Optional[DimT] = None, keepdim: bool = False):
+    def mean(self, dim: Optional[DimT] = None, **kwargs):
         """Like torch.mean but for keyed tensor, dim may optionally be a keyed
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
-            keepdim: whether the output tensor has :attr:`dim` retained or not. Defaults to False.
 
         Example:
             >>> import torch
@@ -115,7 +110,7 @@ class KeyedTensor(AttyDict):
             >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
             >>> kt.mean()
-            tensor(0.4676)
+            tensor(0.4710)
 
             >>> print(kt.mean(dim=-1))
             {'a': tensor([0.4510, 0.3578, 0.6141]), 'b': tensor(0.4610)}
@@ -123,11 +118,7 @@ class KeyedTensor(AttyDict):
             >>> kt.mean(dim='key')
             {'a': tensor(0.4743), 'b': tensor(0.4610)}
         """
-        return self_reduction(self, torch.mean, dim=dim, keepdim=keepdim)
-
-    @torchfunc_registry.register(torch.median)
-    def median(self, *args, **kwargs):
-        return self_reduction(self, torch.median, *args, **kwargs)
+        return self_reduction(self, torch.mean, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.sum)
     def sum(self, *args, **kwargs):

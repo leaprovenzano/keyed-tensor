@@ -66,6 +66,16 @@ class KeyedTensor(AttyDict):
         kwargs = kwargs if kwargs is not None else {}
         return self.torchfunc_registry[func](*args, **kwargs)
 
+    def __eq__(self, other):
+        if isinstance(other, KeyedTensor):
+            if sorted(self) == sorted(other):
+                return self.__class__(((k, v == other[k]) for k, v in self.items()))
+            else:
+                raise RuntimeError('cannot compare equality on KeyedTensors with different keys')
+        elif isinstance(other, (float, torch.Tensor, np.ndarray, int, bool)):
+            return self.__class__(zip(self.keys(), map(lambda x: x == other, self.values())))
+        return NotImplemented
+
     def __abs__(self):
         return self.abs()
 

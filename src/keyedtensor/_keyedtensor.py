@@ -215,12 +215,58 @@ class KeyedTensor(AttyDict):
         return self_reduction(self, torch.argmin, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.std)
-    def std(self, *args, **kwargs):
-        return self_reduction(self, torch.std, *args, **kwargs)
+    def std(self, dim: Optional[DimT] = None, **kwargs):
+        """Like torch.std but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> _ = torch.manual_seed(0)
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.std()
+            tensor(0.2395)
+
+            >>> kt.std(dim=-1)
+            {'a': tensor([0.3421, 0.2548, 0.2452]), 'b': tensor(0.1507)}
+
+            >>> kt.std(dim='key')
+            {'a': tensor(0.2704), 'b': tensor(0.1507)}
+        """
+        return self_reduction(self, torch.std, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.norm)
-    def norm(self, p='fro', *args, **kwargs):
-        return self_reduction(self, torch.norm, *args, **kwargs, p=p)
+    def norm(self, p='fro', dim: Optional[DimT] = None, **kwargs):
+        """Like torch.norm but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            p: norm type (see torch.norm for full details. Defaults to 'fro'.
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>> _ = torch.manual_seed(0)
+            >>>
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.norm()
+            tensor(1.8145)
+
+            >>> kt.norm(dim=-1)
+            {'a': tensor([0.9188, 0.7169, 1.1187]), 'b': tensor(0.8264)}
+
+            >>> kt.norm(dim='key')
+            {'a': tensor(1.6154), 'b': tensor(0.8264)}
+
+            >>> kt.norm(p=1, dim='key')
+            {'a': tensor(4.2687), 'b': tensor(1.3829)}
+        """
+        return self_reduction(self, torch.norm, dim=dim, **kwargs, p=p)
 
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:

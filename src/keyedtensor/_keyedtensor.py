@@ -80,6 +80,38 @@ class KeyedTensor(AttyDict):
         kwargs = kwargs if kwargs is not None else {}
         return self.torchfunc_registry[func](*args, **kwargs)
 
+    @torchfunc_registry.register(torch.all)
+    def all(self, dim: Optional[DimT] = None, keepdim: bool = False):
+        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
+
+    @torchfunc_registry.register(torch.any)
+    def any(self, dim: Optional[DimT] = None, keepdim: bool = False):
+        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
+
+    @torchfunc_registry.register(torch.mean)
+    def mean(self, *args, **kwargs):
+        return self_reduction(self, torch.mean, *args, **kwargs)
+
+    @torchfunc_registry.register(torch.median)
+    def median(self, *args, **kwargs):
+        return self_reduction(self, torch.median, *args, **kwargs)
+
+    @torchfunc_registry.register(torch.sum)
+    def sum(self, *args, **kwargs):
+        return self_reduction(self, torch.sum, *args, **kwargs)
+
+    @torchfunc_registry.register(torch.var)
+    def var(self, *args, **kwargs):
+        return self_reduction(self, torch.var, *args, **kwargs)
+
+    @torchfunc_registry.register(torch.argmax)
+    def argmax(self, dim: Optional[DimT] = None, keepdim: bool = False):
+        return self_reduction(self, torch.argmax, dim=dim, keepdim=keepdim)
+
+    @torchfunc_registry.register(torch.argmin)
+    def argmin(self, dim: Optional[DimT] = None, keepdim: bool = False):
+        return self_reduction(self, torch.argmin, dim=dim, keepdim=keepdim)
+
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:
         return one_to_many(self, torch.unbind)
@@ -99,27 +131,11 @@ class KeyedTensor(AttyDict):
     def acosh(self):
         return self._apply_out_of_place(torch.acosh)
 
-    @torchfunc_registry.register(torch.all)
-    def all(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
-
     def __all__(self):
         return self.all()
 
-    @torchfunc_registry.register(torch.any)
-    def any(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
-
     def __any__(self):
         return self.any()
-
-    @torchfunc_registry.register(torch.argmax)
-    def argmax(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.argmax, dim=dim, keepdim=keepdim)
-
-    @torchfunc_registry.register(torch.argmin)
-    def argmin(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.argmin, dim=dim, keepdim=keepdim)
 
     @torchfunc_registry.register(torch.asin)
     def asin(self):
@@ -247,14 +263,6 @@ class KeyedTensor(AttyDict):
     def log10(self) -> 'KeyedTensor':
         return self._apply_out_of_place(torch.log10)
 
-    @torchfunc_registry.register(torch.mean)
-    def mean(self, *args, **kwargs):
-        return self_reduction(self, torch.mean, *args, **kwargs)
-
-    @torchfunc_registry.register(torch.median)
-    def median(self, *args, **kwargs):
-        return self_reduction(self, torch.median, *args, **kwargs)
-
     @torchfunc_registry.register(torch.neg)
     def neg(self) -> 'KeyedTensor':
         return self._apply_out_of_place(torch.neg)
@@ -334,10 +342,6 @@ class KeyedTensor(AttyDict):
     def std(self, *args, **kwargs):
         return self_reduction(self, torch.std, *args, **kwargs)
 
-    @torchfunc_registry.register(torch.sum)
-    def sum(self, *args, **kwargs):
-        return self_reduction(self, torch.sum, *args, **kwargs)
-
     @torchfunc_registry.register(torch.t)
     def t(self, *args, **kwargs):
         return self._apply_out_of_place(torch.t, *args, **kwargs)
@@ -364,7 +368,3 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.unsqueeze)
     def unsqueeze(self, dim) -> 'KeyedTensor':
         return self_apply_with_args(self, torch.unsqueeze, dim)
-
-    @torchfunc_registry.register(torch.var)
-    def var(self, *args, **kwargs):
-        return self_reduction(self, torch.var, *args, **kwargs)

@@ -278,6 +278,10 @@ class KeyedTensor(AttyDict):
         """
         return self_reduction(self, torch.norm, dim=dim, **kwargs, p=p)
 
+    @torchfunc_registry.register(torch.prod)
+    def prod(self, dim: Optional[DimT] = None, **kwargs):
+        return self_reduction(self, torch.prod, dim=dim, **kwargs)
+
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:
         return one_to_many(self, torch.unbind)
@@ -298,10 +302,6 @@ class KeyedTensor(AttyDict):
     def atan(self):
         return self._apply_out_of_place(torch.atan)
 
-    @torchfunc_registry.register(torch.bernoulli)
-    def bernoulli(self, *args, **kwargs):
-        return self_apply_with_args(self, torch.bernoulli, *args, **kwargs)
-
     @torchfunc_registry.register(torch.ceil)
     def ceil(self):
         return self._apply_out_of_place(torch.ceil)
@@ -320,14 +320,6 @@ class KeyedTensor(AttyDict):
 
     def cuda(self, *args, **kwargs) -> 'KeyedTensor':
         return self._apply_out_of_place(lambda x: x.cuda(*args, **kwargs))
-
-    @torchfunc_registry.register(torch.cumprod)
-    def cumprod(self, *args, **kwargs):
-        return self_apply_with_args(self, torch.cumprod, *args, **kwargs)
-
-    @torchfunc_registry.register(torch.cumsum)
-    def cumsum(self, *args, **kwargs):
-        return self_apply_with_args(self, torch.cumsum, *args, **kwargs)
 
     @property
     def data(self) -> 'KeyedTensor':
@@ -376,10 +368,6 @@ class KeyedTensor(AttyDict):
     def hardshrink(self, *args, **kwargs) -> 'KeyedTensor':
         return self_apply_with_args(self, torch.hardshrink, *args, **kwargs)
 
-    @torchfunc_registry.register(torch.inverse)
-    def inverse(self) -> 'KeyedTensor':
-        return self._apply_out_of_place(torch.inverse)
-
     @torchfunc_registry.register(torch.isnan)
     def isnan(self) -> 'KeyedTensor':
         return self._apply_out_of_place(torch.isnan)
@@ -418,10 +406,6 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.polygamma)
     def polygamma(self, *args, **kwargs):
         return self_apply_with_args(self, torch.polygamma, *args, **kwargs)
-
-    @torchfunc_registry.register(torch.prod)
-    def prod(self, *args, **kwargs):
-        return self_reduction(self, torch.prod, *args, **kwargs)
 
     @torchfunc_registry.register(torch.reciprocal)
     def reciprocal(self) -> 'KeyedTensor':

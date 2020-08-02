@@ -3,7 +3,7 @@ import torch
 from keyedtensor import KeyedTensor
 
 bool_reductions = ['any', 'all']
-self_reductions = ['argmin', 'argmax', 'mean', 'norm', 'prod', 'var', 'sum', 'std']
+self_reductions = ['argmin', 'argmax', 'mean', 'norm', 'prod', 'var', 'sum', 'std', 'prod']
 
 
 @pytest.mark.parametrize('funcname,', self_reductions + bool_reductions)

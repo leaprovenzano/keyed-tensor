@@ -146,8 +146,30 @@ class KeyedTensor(AttyDict):
         return self_reduction(self, torch.sum, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.var)
-    def var(self, *args, **kwargs):
-        return self_reduction(self, torch.var, *args, **kwargs)
+    def var(self, dim: Optional[DimT] = None, **kwargs):
+        """Like torch.var but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> _ = torch.manual_seed(0)
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.var()
+            tensor(0.0574)
+
+            >>> kt.var(dim=-1)
+            {'a': tensor([0.1171, 0.0649, 0.0601]), 'b': tensor(0.0227)}
+
+            >>> kt.var(dim='key')
+            {'a': tensor(0.0731), 'b': tensor(0.0227)}
+
+        """
+        return self_reduction(self, torch.var, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmax)
     def argmax(self, dim: Optional[DimT] = None, keepdim: bool = False):

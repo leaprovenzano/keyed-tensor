@@ -129,25 +129,13 @@ class KeyedTensor(AttyDict):
     def acos(self):
         return self._apply_out_of_place(torch.acos)
 
-    @torchfunc_registry.register(torch.acosh)
-    def acosh(self):
-        return self._apply_out_of_place(torch.acosh)
-
     @torchfunc_registry.register(torch.asin)
     def asin(self):
         return self._apply_out_of_place(torch.asin)
 
-    @torchfunc_registry.register(torch.asinh)
-    def asinh(self):
-        return self._apply_out_of_place(torch.asinh)
-
     @torchfunc_registry.register(torch.atan)
     def atan(self):
         return self._apply_out_of_place(torch.atan)
-
-    @torchfunc_registry.register(torch.atanh)
-    def atanh(self):
-        return self._apply_out_of_place(torch.atanh)
 
     @torchfunc_registry.register(torch.bernoulli)
     def bernoulli(self, *args, **kwargs):
@@ -183,10 +171,6 @@ class KeyedTensor(AttyDict):
     @property
     def data(self) -> 'KeyedTensor':
         return self._apply_out_of_place(lambda x: x.data)
-
-    @torchfunc_registry.register(torch.deg2rad)
-    def deg2rad(self) -> 'KeyedTensor':
-        return self._apply_out_of_place(torch.deg2rad)
 
     @torchfunc_registry.register(torch.detach)
     def detach(self) -> 'KeyedTensor':
@@ -277,10 +261,6 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.prod)
     def prod(self, *args, **kwargs):
         return self_reduction(self, torch.prod, *args, **kwargs)
-
-    @torchfunc_registry.register(torch.rad2deg)
-    def rad2deg(self) -> 'KeyedTensor':
-        return self._apply_out_of_place(torch.rad2deg)
 
     @torchfunc_registry.register(torch.reciprocal)
     def reciprocal(self) -> 'KeyedTensor':

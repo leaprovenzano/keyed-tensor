@@ -85,6 +85,9 @@ class KeyedTensor(AttyDict):
     def __any__(self):
         return self.any()
 
+    def __neg__(self) -> 'KeyedTensor':
+        return self.neg()
+
     @torchfunc_registry.register(torch.all)
     def all(self, dim: Optional[DimT] = None, **kwargs):
         """Like torch.all but for keyed tensor. dim may optionally be a keyed
@@ -395,9 +398,6 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.neg)
     def neg(self) -> 'KeyedTensor':
         return self._apply_out_of_place(torch.neg)
-
-    def __neg__(self) -> 'KeyedTensor':
-        return self.neg()
 
     @torchfunc_registry.register(torch.numel)
     def numel(self) -> 'KeyedTensor':

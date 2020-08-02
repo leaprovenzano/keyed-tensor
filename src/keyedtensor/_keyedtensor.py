@@ -36,21 +36,9 @@ def one_to_many(kt: 'KeyedTensor', op, *args, **kwargs) -> List['KeyedTensor']:
     ]
 
 
-def unpack_args(*items, **kwargs):
-    if len(items) == 1 and isinstance(items[0], dict):
-        yield from items.items()
-    else:
-        yield from items
-    yield from kwargs.items()
-
-
 class KeyedTensor(AttyDict):
 
     torchfunc_registry: TorchFuncRegistry = TorchFuncRegistry()
-
-    def __init__(self, *items, **kwargs):
-        for k, v in unpack_args(*items, **kwargs):
-            self._set_key(k, v)
 
     def _set_key(self, key: str, value):
         if key not in self:

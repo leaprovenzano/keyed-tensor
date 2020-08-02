@@ -80,6 +80,15 @@ class KeyedTensor(AttyDict):
         kwargs = kwargs if kwargs is not None else {}
         return self.torchfunc_registry[func](*args, **kwargs)
 
+    def __abs__(self):
+        return self.abs()
+
+    def __all__(self):
+        return self.all()
+
+    def __any__(self):
+        return self.any()
+
     @torchfunc_registry.register(torch.all)
     def all(self, dim: Optional[DimT] = None, keepdim: bool = False):
         return self_reduction(self, torch.any, dim=dim, keepdim=keepdim)
@@ -120,9 +129,6 @@ class KeyedTensor(AttyDict):
     def abs(self):
         return self._apply_out_of_place(torch.abs)
 
-    def __abs__(self):
-        return self.abs()
-
     @torchfunc_registry.register(torch.acos)
     def acos(self):
         return self._apply_out_of_place(torch.acos)
@@ -130,12 +136,6 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.acosh)
     def acosh(self):
         return self._apply_out_of_place(torch.acosh)
-
-    def __all__(self):
-        return self.all()
-
-    def __any__(self):
-        return self.any()
 
     @torchfunc_registry.register(torch.asin)
     def asin(self):

@@ -31,7 +31,7 @@ def self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
 
 def one_to_many(kt: 'KeyedTensor', op, *args, **kwargs) -> List['KeyedTensor']:
     return [
-        kt.__class__(*zip(kt.keys(), values))
+        kt.__class__(zip(kt.keys(), values))
         for values in zip(*map(lambda x: op(x, *args, **kwargs), kt.values()))
     ]
 
@@ -60,7 +60,7 @@ class KeyedTensor(AttyDict):
         return self._apply_out_of_place(lambda x: x[key])
 
     def _apply_out_of_place(self, op):
-        return self.__class__(*zip(self.keys(), map(op, self.values())))
+        return self.__class__(zip(self.keys(), map(op, self.values())))
 
     def __torch_function__(self, func, types, args=(), kwargs=None):
         if func not in self.torchfunc_registry:

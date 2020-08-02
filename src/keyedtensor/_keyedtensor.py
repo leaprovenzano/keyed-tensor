@@ -19,8 +19,8 @@ def self_reduction(kt: 'KeyedTensor', op, dim: Optional[DimT] = None, **kwargs):
     if dim is None:
         return op(torch.cat(list(map(torch.flatten, kt.values()))), **kwargs)
     elif dim == 'key':
-        return kt._apply_out_of_place(lambda x: op(x, **kwargs))
-    return kt._apply_out_of_place(lambda x: op(x, dim=dim, **kwargs))
+        return self_apply_with_args(kt, op, **kwargs)
+    return self_apply_with_args(kt, op, dim=dim, **kwargs)
 
 
 def self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
@@ -83,7 +83,7 @@ class KeyedTensor(AttyDict):
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
         """
-        return self_reduction(self, torch.any, dim=dim, **kwargs)
+        return self_reduction(self, torch.all, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.any)
     def any(self, dim: Optional[DimT] = None, **kwargs):

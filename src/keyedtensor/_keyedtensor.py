@@ -167,17 +167,52 @@ class KeyedTensor(AttyDict):
 
             >>> kt.var(dim='key')
             {'a': tensor(0.0731), 'b': tensor(0.0227)}
-
         """
         return self_reduction(self, torch.var, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmax)
-    def argmax(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.argmax, dim=dim, keepdim=keepdim)
+    def argmax(self, dim: Optional[DimT] = None, **kwargs):
+        """Like torch.argmax but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> _ = torch.manual_seed(0)
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.argmax(dim=-1)
+            {'a': tensor([1, 2, 1]), 'b': tensor(0)}
+
+            >>> kt.argmax(dim='key')
+            {'a': tensor(7), 'b': tensor(0)}
+        """
+        return self_reduction(self, torch.argmax, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmin)
-    def argmin(self, dim: Optional[DimT] = None, keepdim: bool = False):
-        return self_reduction(self, torch.argmin, dim=dim, keepdim=keepdim)
+    def argmin(self, dim: Optional[DimT] = None, **kwargs):
+        """Like torch.argmin but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> _ = torch.manual_seed(0)
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.argmin(dim=-1)
+            {'a': tensor([2, 0, 2]), 'b': tensor(1)}
+
+            >>> kt.argmin(dim='key')
+            {'a': tensor(2), 'b': tensor(1)}
+        """
+        return self_reduction(self, torch.argmin, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.std)
     def std(self, *args, **kwargs):

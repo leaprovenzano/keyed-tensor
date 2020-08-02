@@ -1,2 +1,2 @@
-collectionish>=0.2.1
+collectionish>=0.3.0
 torch

@@ -121,8 +121,29 @@ class KeyedTensor(AttyDict):
         return self_reduction(self, torch.mean, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.sum)
-    def sum(self, *args, **kwargs):
-        return self_reduction(self, torch.sum, *args, **kwargs)
+    def sum(self, dim: Optional[DimT] = None, **kwargs):
+        """Like torch.sum but for keyed tensor, dim may optionally be a keyed
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> _ = torch.manual_seed(0)
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt.sum()
+            tensor(5.6516)
+
+            >>> kt.sum(dim=-1)
+            {'a': tensor([1.3530, 1.0735, 1.8422]), 'b': tensor(1.3829)}
+
+            >>> kt.sum(dim='key')
+            {'a': tensor(4.2687), 'b': tensor(1.3829)}
+        """
+        return self_reduction(self, torch.sum, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.var)
     def var(self, *args, **kwargs):

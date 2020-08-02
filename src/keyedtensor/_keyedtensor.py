@@ -10,6 +10,7 @@ from keyedtensor._registry import TorchFuncRegistry
 
 
 DimT = Union[Literal['keys'], int]
+ValidOtherT = Union['KeyedTensor', int, float, bool, torch.Tensor, np.ndarray]
 
 
 # patterns
@@ -32,6 +33,17 @@ def one_to_many(kt: 'KeyedTensor', op, *args, **kwargs) -> List['KeyedTensor']:
         kt.__class__(zip(kt.keys(), values))
         for values in zip(*map(lambda x: op(x, *args, **kwargs), kt.values()))
     ]
+
+
+def apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT, **kwargs) -> 'KeyedTensor':
+    if isinstance(other, KeyedTensor):
+        if sorted(kt) == sorted(other):
+            return kt.__class__((k, op(v, other[k], **kwargs)) for k, v in kt.items())
+        else:
+            raise RuntimeError('cannot compare equality on KeyedTensors with different keys')
+    elif isinstance(other, (float, torch.Tensor, np.ndarray, int, bool)):
+        return kt.__class__(zip(kt.keys(), map(lambda x: op(x, other, **kwargs), kt.values())))
+    return NotImplemented
 
 
 class KeyedTensor(AttyDict):
@@ -67,14 +79,7 @@ class KeyedTensor(AttyDict):
         return self.torchfunc_registry[func](*args, **kwargs)
 
     def __eq__(self, other):
-        if isinstance(other, KeyedTensor):
-            if sorted(self) == sorted(other):
-                return self.__class__(((k, v == other[k]) for k, v in self.items()))
-            else:
-                raise RuntimeError('cannot compare equality on KeyedTensors with different keys')
-        elif isinstance(other, (float, torch.Tensor, np.ndarray, int, bool)):
-            return self.__class__(zip(self.keys(), map(lambda x: x == other, self.values())))
-        return NotImplemented
+        return apply_with_other(self, lambda x, y: x == y, other)
 
     def __abs__(self):
         return self.abs()
@@ -481,3 +486,57 @@ class KeyedTensor(AttyDict):
     @torchfunc_registry.register(torch.unsqueeze)
     def unsqueeze(self, dim) -> 'KeyedTensor':
         return self_apply_with_args(self, torch.unsqueeze, dim)
+
+    @torchfunc_registry.register(torch.add)
+    def add(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.add, other)
+
+    @torchfunc_registry.register(torch.sub)
+    def sub(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.sub, other)
+
+    @torchfunc_registry.register(torch.mul)
+    def mul(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.mul, other)
+
+    @torchfunc_registry.register(torch.div)
+    def div(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.div, other)
+
+    @torchfunc_registry.register(torch.true_divide)
+    def true_divide(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.true_divide, other)
+
+    @torchfunc_registry.register(torch.pow)
+    def pow(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.pow, other)
+
+    def __pow__(self, other):
+        return self.pow(other)
+
+    def __add__(self, other):
+        return self.add(other)
+
+    def __mul__(self, other):
+        return self.mul(other)
+
+    def __trudiv__(self, other):
+        return self.true_divide(other)
+
+    def __sub__(self, other):
+        return self.sub(other)
+
+    def __ipow__(self, other):
+        return self.pow(other)
+
+    def __iadd__(self, other):
+        return self.add(other)
+
+    def __imul__(self, other):
+        return self.mul(other)
+
+    def __itrudiv__(self, other):
+        return self.true_divide(other)
+
+    def __isub__(self, other):
+        return self.sub(other)

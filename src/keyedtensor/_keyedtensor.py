@@ -46,6 +46,12 @@ def apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT, **kwargs) -> 'Ke
     return NotImplemented
 
 
+def rapply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT) -> 'KeyedTensor':
+    if isinstance(other, (float, torch.Tensor, np.ndarray, int, bool)):
+        return kt.__class__(zip(kt.keys(), map(lambda x: op(other, x), kt.values())))
+    return NotImplemented
+
+
 class KeyedTensor(AttyDict):
 
     torchfunc_registry: TorchFuncRegistry = TorchFuncRegistry()
@@ -77,9 +83,6 @@ class KeyedTensor(AttyDict):
             return NotImplemented
         kwargs = kwargs if kwargs is not None else {}
         return self.torchfunc_registry[func](*args, **kwargs)
-
-    def __eq__(self, other):
-        return apply_with_other(self, lambda x, y: x == y, other)
 
     def __abs__(self):
         return self.abs()
@@ -511,8 +514,24 @@ class KeyedTensor(AttyDict):
     def pow(self, other: ValidOtherT) -> 'KeyedTensor':
         return apply_with_other(self, torch.pow, other)
 
+    @torchfunc_registry.register(torch.eq)
+    def eq(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.eq, other)
+
+    @torchfunc_registry.register(torch.ge)
+    def ge(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.ge, other)
+
+    @torchfunc_registry.register(torch.eq)
+    def lt(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.lt, other)
+
+    @torchfunc_registry.register(torch.ge)
+    def le(self, other: ValidOtherT) -> 'KeyedTensor':
+        return apply_with_other(self, torch.le, other)
+
     def __pow__(self, other):
-        return self.pow(other)
+        return rapply_with_other()
 
     def __add__(self, other):
         return self.add(other)
@@ -520,7 +539,7 @@ class KeyedTensor(AttyDict):
     def __mul__(self, other):
         return self.mul(other)
 
-    def __trudiv__(self, other):
+    def __truediv__(self, other):
         return self.true_divide(other)
 
     def __sub__(self, other):
@@ -535,8 +554,53 @@ class KeyedTensor(AttyDict):
     def __imul__(self, other):
         return self.mul(other)
 
-    def __itrudiv__(self, other):
+    def __itruediv__(self, other):
         return self.true_divide(other)
 
     def __isub__(self, other):
         return self.sub(other)
+
+    def __rpow__(self, other):
+        return rapply_with_other(self, torch.pow, other)
+
+    def __radd__(self, other):
+        return rapply_with_other(self, torch.add, other)
+
+    def __rmul__(self, other):
+        return rapply_with_other(self, torch.mul, other)
+
+    def __rtruediv__(self, other):
+        return rapply_with_other(self, torch.true_divide, other)
+
+    def __rsub__(self, other):
+        return rapply_with_other(self, torch.sub, other)
+
+    def __eq__(self, other):
+        return apply_with_other(self, torch.eq, other)
+
+    def __req__(self, other):
+        return rapply_with_other(self, torch.eq, other)
+
+    def __lt__(self, other):
+        return apply_with_other(self, torch.lt, other)
+
+    def __rlt__(self, other):
+        return rapply_with_other(self, torch.lt, other)
+
+    def __le__(self, other):
+        return apply_with_other(self, torch.le, other)
+
+    def __rle__(self, other):
+        return rapply_with_other(self, torch.le, other)
+
+    def __gt__(self, other):
+        return apply_with_other(self, torch.gt, other)
+
+    def __rgt__(self, other):
+        return rapply_with_other(self, torch.gt, other)
+
+    def __ge__(self, other):
+        return apply_with_other(self, torch.ge, other)
+
+    def __rge__(self, other):
+        return rapply_with_other(self, torch.ge, other)

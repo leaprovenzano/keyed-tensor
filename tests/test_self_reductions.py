@@ -3,10 +3,10 @@ import torch
 from keyedtensor import KeyedTensor
 
 bool_reductions = ['any', 'all']
-self_reductions = ['argmin', 'argmax', 'mean', 'norm', 'prod', 'var', 'sum', 'std', 'prod']
+_self_reductions = ['argmin', 'argmax', 'mean', 'norm', 'prod', 'var', 'sum', 'std', 'prod']
 
 
-@pytest.mark.parametrize('funcname,', self_reductions + bool_reductions)
+@pytest.mark.parametrize('funcname,', _self_reductions + bool_reductions)
 def test_all_reduce(funcname):
 
     kt = KeyedTensor(a=torch.rand(5, 4), b=torch.rand(5, 2), c=torch.rand(5))
@@ -27,7 +27,7 @@ def test_all_reduce(funcname):
     return method() == torchfunc(kt) == expected
 
 
-@pytest.mark.parametrize('funcname,', self_reductions + bool_reductions)
+@pytest.mark.parametrize('funcname,', _self_reductions + bool_reductions)
 def test_keyed_reduce(funcname):
 
     kt = KeyedTensor(a=torch.rand(5, 4), b=torch.rand(5, 2), c=torch.rand(5))
@@ -48,7 +48,7 @@ def test_keyed_reduce(funcname):
     assert result.c == torchfunc(kt.c)
 
 
-@pytest.mark.parametrize('funcname,', self_reductions + bool_reductions)
+@pytest.mark.parametrize('funcname,', _self_reductions + bool_reductions)
 def test_dim_reduce(funcname):
 
     kt = KeyedTensor(a=torch.rand(5, 4), b=torch.rand(5, 2), c=torch.rand(5))

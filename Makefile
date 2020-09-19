@@ -54,7 +54,7 @@ lint: ## check style with flake8
 	flake8 src/keyedtensor tests
 
 test: ## run tests quickly with the default Python
-	py.test --cov src/keyedtensor
+	pytest
 
 test-all: ## run tests on every Python version with tox
 	tox

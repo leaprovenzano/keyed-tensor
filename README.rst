@@ -29,7 +29,7 @@ keyedtensor
 * Free software: MIT license
 
 * Documentation: `docs`_
-* Supported Python Versions: >=3.6
+* Supported Python Versions: >=3.7
 
 ----
 

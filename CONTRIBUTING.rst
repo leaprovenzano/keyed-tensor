@@ -1,4 +1,4 @@
-.. _issues: https://github.com/leaprovenzano/keyed-tensor/issues
+.. _issues: https://github.com/leaprovenzano/keyedtensor/issues
 
 ============
 Contributing
@@ -51,12 +51,12 @@ Setting up for local development:
 1. Fork the keyedtensor repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/keyed-tensor.git
+    $ git clone git@github.com:your_name_here/keyedtensor.git
 
 3. Install your local copy into a virtualenv::
 
-    $ python3 -m keyed-tensor/env
-    $ cd keyed-tensor
+    $ python3 -m keyedtensor/env
+    $ cd keyedtensor
     $ source env/bin/activate
     $ pip install -e .
 

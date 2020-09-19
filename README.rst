@@ -3,20 +3,20 @@ keyedtensor
 ===========
 
 
-.. image:: https://img.shields.io/pypi/v/keyed-tensor.svg
-    :target: https://pypi.python.org/pypi/keyed-tensor
+.. image:: https://img.shields.io/pypi/v/keyedtensor.svg
+    :target: https://pypi.python.org/pypi/keyedtensor
     :alt: pypi version
 
-.. image:: https://img.shields.io/travis/leaprovenzano/keyed-tensor.svg
-    :target: https://travis-ci.com/leaprovenzano/keyed-tensor
+.. image:: https://img.shields.io/travis/leaprovenzano/keyedtensor.svg
+    :target: https://travis-ci.com/leaprovenzano/keyedtensor
     :alt: travis build
 
 .. image:: https://readthedocs.org/projects/keyedtensor/badge/?version=latest
     :target: https://keyedtensor.readthedocs.io/en/latest/?badge=latest
     :alt: documentation status
 
-.. image:: https://codecov.io/gh/leaprovenzano/keyed-tensor/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/leaprovenzano/keyed-tensor
+.. image:: https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/leaprovenzano/keyedtensor
     :alt: coverage
 
 .. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
@@ -62,4 +62,4 @@ Principles:
 
 * TODO
 
-.. _docs: https://keyed-tensor.readthedocs.io
+.. _docs: https://keyedtensor.readthedocs.io

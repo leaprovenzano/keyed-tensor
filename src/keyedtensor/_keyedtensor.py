@@ -16,26 +16,26 @@ ValidOtherT = Union['KeyedTensor', int, float, bool, torch.Tensor, np.ndarray]
 # patterns
 
 
-def self_reduction(kt: 'KeyedTensor', op, dim: Optional[DimT] = None, **kwargs):
+def _self_reduction(kt: 'KeyedTensor', op, dim: Optional[DimT] = None, **kwargs):
     if dim is None:
         return op(torch.cat(list(map(torch.flatten, kt.values()))), **kwargs)
     elif dim == 'key':
-        return self_apply_with_args(kt, op, **kwargs)
-    return self_apply_with_args(kt, op, dim=dim, **kwargs)
+        return _self_apply_with_args(kt, op, **kwargs)
+    return _self_apply_with_args(kt, op, dim=dim, **kwargs)
 
 
-def self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
+def _self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
     return kt._apply_out_of_place(lambda x: op(x, *args, **kwargs))
 
 
-def one_to_many(kt: 'KeyedTensor', op, *args, **kwargs) -> List['KeyedTensor']:
+def _one_to_many(kt: 'KeyedTensor', op, *args, **kwargs) -> List['KeyedTensor']:
     return [
         kt.__class__(zip(kt.keys(), values))
         for values in zip(*map(lambda x: op(x, *args, **kwargs), kt.values()))
     ]
 
 
-def apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT, **kwargs) -> 'KeyedTensor':
+def _apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT, **kwargs) -> 'KeyedTensor':
     if isinstance(other, KeyedTensor):
         if sorted(kt) == sorted(other):
             return kt.__class__((k, op(v, other[k], **kwargs)) for k, v in kt.items())
@@ -46,7 +46,7 @@ def apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT, **kwargs) -> 'Ke
     return NotImplemented
 
 
-def rapply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT) -> 'KeyedTensor':
+def _r_apply_with_other(kt: 'KeyedTensor', op, other: ValidOtherT) -> 'KeyedTensor':
     if isinstance(other, (float, torch.Tensor, np.ndarray, int, bool)):
         return kt.__class__(zip(kt.keys(), map(lambda x: op(other, x), kt.values())))
     return NotImplemented
@@ -104,7 +104,7 @@ class KeyedTensor(AttyDict):
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
         """
-        return self_reduction(self, torch.all, dim=dim, **kwargs)
+        return _self_reduction(self, torch.all, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.any)
     def any(self, dim: Optional[DimT] = None, **kwargs):
@@ -114,7 +114,7 @@ class KeyedTensor(AttyDict):
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
         """
-        return self_reduction(self, torch.any, dim=dim, **kwargs)
+        return _self_reduction(self, torch.any, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.mean)
     def mean(self, dim: Optional[DimT] = None, **kwargs):
@@ -139,7 +139,7 @@ class KeyedTensor(AttyDict):
             >>> kt.mean(dim='key')
             {'a': tensor(0.4743), 'b': tensor(0.4610)}
         """
-        return self_reduction(self, torch.mean, dim=dim, **kwargs)
+        return _self_reduction(self, torch.mean, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.sum)
     def sum(self, dim: Optional[DimT] = None, **kwargs):
@@ -164,7 +164,7 @@ class KeyedTensor(AttyDict):
             >>> kt.sum(dim='key')
             {'a': tensor(4.2687), 'b': tensor(1.3829)}
         """
-        return self_reduction(self, torch.sum, dim=dim, **kwargs)
+        return _self_reduction(self, torch.sum, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.var)
     def var(self, dim: Optional[DimT] = None, **kwargs):
@@ -189,7 +189,7 @@ class KeyedTensor(AttyDict):
             >>> kt.var(dim='key')
             {'a': tensor(0.0731), 'b': tensor(0.0227)}
         """
-        return self_reduction(self, torch.var, dim=dim, **kwargs)
+        return _self_reduction(self, torch.var, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmax)
     def argmax(self, dim: Optional[DimT] = None, **kwargs):
@@ -211,7 +211,7 @@ class KeyedTensor(AttyDict):
             >>> kt.argmax(dim='key')
             {'a': tensor(7), 'b': tensor(0)}
         """
-        return self_reduction(self, torch.argmax, dim=dim, **kwargs)
+        return _self_reduction(self, torch.argmax, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmin)
     def argmin(self, dim: Optional[DimT] = None, **kwargs):
@@ -233,7 +233,7 @@ class KeyedTensor(AttyDict):
             >>> kt.argmin(dim='key')
             {'a': tensor(2), 'b': tensor(1)}
         """
-        return self_reduction(self, torch.argmin, dim=dim, **kwargs)
+        return _self_reduction(self, torch.argmin, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.std)
     def std(self, dim: Optional[DimT] = None, **kwargs):
@@ -258,7 +258,7 @@ class KeyedTensor(AttyDict):
             >>> kt.std(dim='key')
             {'a': tensor(0.2704), 'b': tensor(0.1507)}
         """
-        return self_reduction(self, torch.std, dim=dim, **kwargs)
+        return _self_reduction(self, torch.std, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.norm)
     def norm(self, p='fro', dim: Optional[DimT] = None, **kwargs):
@@ -287,15 +287,15 @@ class KeyedTensor(AttyDict):
             >>> kt.norm(p=1, dim='key')
             {'a': tensor(4.2687), 'b': tensor(1.3829)}
         """
-        return self_reduction(self, torch.norm, dim=dim, **kwargs, p=p)
+        return _self_reduction(self, torch.norm, dim=dim, **kwargs, p=p)
 
     @torchfunc_registry.register(torch.prod)
     def prod(self, dim: Optional[DimT] = None, **kwargs):
-        return self_reduction(self, torch.prod, dim=dim, **kwargs)
+        return _self_reduction(self, torch.prod, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:
-        return one_to_many(self, torch.unbind)
+        return _one_to_many(self, torch.unbind)
 
     @torchfunc_registry.register(torch.abs)
     def abs(self):
@@ -319,7 +319,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.chunk)
     def chunk(self, chunks: int, dim=0) -> List['KeyedTensor']:
-        return one_to_many(self, torch.chunk, chunks, dim=dim)
+        return _one_to_many(self, torch.chunk, chunks, dim=dim)
 
     @torchfunc_registry.register(torch.cos)
     def cos(self) -> 'KeyedTensor':
@@ -377,7 +377,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.hardshrink)
     def hardshrink(self, *args, **kwargs) -> 'KeyedTensor':
-        return self_apply_with_args(self, torch.hardshrink, *args, **kwargs)
+        return _self_apply_with_args(self, torch.hardshrink, *args, **kwargs)
 
     @torchfunc_registry.register(torch.isnan)
     def isnan(self) -> 'KeyedTensor':
@@ -413,7 +413,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.polygamma)
     def polygamma(self, *args, **kwargs):
-        return self_apply_with_args(self, torch.polygamma, *args, **kwargs)
+        return _self_apply_with_args(self, torch.polygamma, *args, **kwargs)
 
     @torchfunc_registry.register(torch.reciprocal)
     def reciprocal(self) -> 'KeyedTensor':
@@ -449,7 +449,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.split)
     def split(self, split_size_or_sections, dim=0) -> List['KeyedTensor']:
-        return one_to_many(self, torch.split, split_size_or_sections, dim=dim)
+        return _one_to_many(self, torch.split, split_size_or_sections, dim=dim)
 
     @torchfunc_registry.register(torch.sqrt)
     def sqrt(self) -> 'KeyedTensor':
@@ -461,7 +461,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.squeeze)
     def squeeze(self, *args, **kwargs) -> 'KeyedTensor':
-        return self_apply_with_args(self, torch.squeeze, *args, **kwargs)
+        return _self_apply_with_args(self, torch.squeeze, *args, **kwargs)
 
     @torchfunc_registry.register(torch.t)
     def t(self, *args, **kwargs):
@@ -480,7 +480,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.transpose)
     def transpose(self, dim0, dim1) -> 'KeyedTensor':
-        return self_apply_with_args(self, torch.transpose, dim0, dim1)
+        return _self_apply_with_args(self, torch.transpose, dim0, dim1)
 
     @torchfunc_registry.register(torch.trunc)
     def trunc(self, *args, **kwargs):
@@ -488,50 +488,50 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.unsqueeze)
     def unsqueeze(self, dim) -> 'KeyedTensor':
-        return self_apply_with_args(self, torch.unsqueeze, dim)
+        return _self_apply_with_args(self, torch.unsqueeze, dim)
 
     @torchfunc_registry.register(torch.add)
     def add(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.add, other)
+        return _apply_with_other(self, torch.add, other)
 
     @torchfunc_registry.register(torch.sub)
     def sub(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.sub, other)
+        return _apply_with_other(self, torch.sub, other)
 
     @torchfunc_registry.register(torch.mul)
     def mul(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.mul, other)
+        return _apply_with_other(self, torch.mul, other)
 
     @torchfunc_registry.register(torch.div)
     def div(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.div, other)
+        return _apply_with_other(self, torch.div, other)
 
     @torchfunc_registry.register(torch.true_divide)
     def true_divide(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.true_divide, other)
+        return _apply_with_other(self, torch.true_divide, other)
 
     @torchfunc_registry.register(torch.pow)
     def pow(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.pow, other)
+        return _apply_with_other(self, torch.pow, other)
 
     @torchfunc_registry.register(torch.eq)
     def eq(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.eq, other)
+        return _apply_with_other(self, torch.eq, other)
 
     @torchfunc_registry.register(torch.ge)
     def ge(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.ge, other)
+        return _apply_with_other(self, torch.ge, other)
 
     @torchfunc_registry.register(torch.eq)
     def lt(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.lt, other)
+        return _apply_with_other(self, torch.lt, other)
 
     @torchfunc_registry.register(torch.ge)
     def le(self, other: ValidOtherT) -> 'KeyedTensor':
-        return apply_with_other(self, torch.le, other)
+        return _apply_with_other(self, torch.le, other)
 
     def __pow__(self, other):
-        return rapply_with_other()
+        return _r_apply_with_other()
 
     def __add__(self, other):
         return self.add(other)
@@ -561,46 +561,46 @@ class KeyedTensor(AttyDict):
         return self.sub(other)
 
     def __rpow__(self, other):
-        return rapply_with_other(self, torch.pow, other)
+        return _r_apply_with_other(self, torch.pow, other)
 
     def __radd__(self, other):
-        return rapply_with_other(self, torch.add, other)
+        return _r_apply_with_other(self, torch.add, other)
 
     def __rmul__(self, other):
-        return rapply_with_other(self, torch.mul, other)
+        return _r_apply_with_other(self, torch.mul, other)
 
     def __rtruediv__(self, other):
-        return rapply_with_other(self, torch.true_divide, other)
+        return _r_apply_with_other(self, torch.true_divide, other)
 
     def __rsub__(self, other):
-        return rapply_with_other(self, torch.sub, other)
+        return _r_apply_with_other(self, torch.sub, other)
 
     def __eq__(self, other):
-        return apply_with_other(self, torch.eq, other)
+        return _apply_with_other(self, torch.eq, other)
 
     def __req__(self, other):
-        return rapply_with_other(self, torch.eq, other)
+        return _r_apply_with_other(self, torch.eq, other)
 
     def __lt__(self, other):
-        return apply_with_other(self, torch.lt, other)
+        return _apply_with_other(self, torch.lt, other)
 
     def __rlt__(self, other):
-        return rapply_with_other(self, torch.lt, other)
+        return _r_apply_with_other(self, torch.lt, other)
 
     def __le__(self, other):
-        return apply_with_other(self, torch.le, other)
+        return _apply_with_other(self, torch.le, other)
 
     def __rle__(self, other):
-        return rapply_with_other(self, torch.le, other)
+        return _r_apply_with_other(self, torch.le, other)
 
     def __gt__(self, other):
-        return apply_with_other(self, torch.gt, other)
+        return _apply_with_other(self, torch.gt, other)
 
     def __rgt__(self, other):
-        return rapply_with_other(self, torch.gt, other)
+        return _r_apply_with_other(self, torch.gt, other)
 
     def __ge__(self, other):
-        return apply_with_other(self, torch.ge, other)
+        return _apply_with_other(self, torch.ge, other)
 
     def __rge__(self, other):
-        return rapply_with_other(self, torch.ge, other)
+        return _r_apply_with_other(self, torch.ge, other)

@@ -13,4 +13,3 @@ script:
 - flake8
 - mypy src/keyedtensor
 - pytest
-- make dist && twine check dist/*

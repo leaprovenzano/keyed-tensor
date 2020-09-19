@@ -8,11 +8,12 @@ keyedtensor docs
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
 .. autosummary::
    :toctree: _autosummary
-   
+   :template: base.rst
+
+   KeyedTensor
 
 
 Indices and tables

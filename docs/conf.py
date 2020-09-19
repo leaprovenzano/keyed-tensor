@@ -20,9 +20,8 @@ import keyedtensor
 # -- Project information -----------------------------------------------------
 
 project = 'keyedtensor'
-copyright = "2020, Lea Provenzano"
+copyright = '2019, Lea Provenzano'
 author = keyedtensor.__author__
-
 
 # The full version, including alpha/beta/rc tags
 release = keyedtensor.__version__
@@ -68,7 +67,7 @@ napoleon_numpy_docstring = False
 autosummary_generate = True
 
 
-autoclass_content = "both"  # include both class docstring and __init__
+autoclass_content = "class"  # include both class docstring and __init__
 autodoc_default_flags = [
     # Make sure that any autodoc declarations show the right members
     "members",
@@ -78,4 +77,3 @@ autodoc_default_flags = [
 ]
 
 master_doc = 'index'
-

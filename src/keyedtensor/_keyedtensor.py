@@ -127,7 +127,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.mean)
     def mean(self, dim: Optional[DimT] = None, **kwargs):
-        """Like torch.mean but for keyed tensor, dim may optionally be a keyed
+        """Like `torch.mean` but for keyed tensor.
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
@@ -145,20 +145,32 @@ class KeyedTensor(AttyDict):
                                   [0.4901, 0.8964, 0.4556]]),
                         b=tensor([0.6323, 0.3489, 0.4017]))
 
+            with dim unspecified we apply `mean` over all values in the `KeyedTensor`:
+
             >>> kt.mean()
             tensor(0.4710)
 
-            >>> print(kt.mean(dim=-1))
+            specify a numeric dim to apply `mean` along each keyed tensor:
+
+            >>> kt.mean(dim=-1)
             KeyedTensor(a=tensor([0.4510, 0.3578, 0.6141]), b=tensor(0.4610))
+
+            or specify `key` to apply `mean` per keyed tensor:
 
             >>> kt.mean(dim='key')
             KeyedTensor(a=tensor(0.4743), b=tensor(0.4610))
+
+            calling torch.mean on a KeyedTensor workds as expected:
+
+            >>> torch.mean(kt, dim='key')
+            KeyedTensor(a=tensor(0.4743), b=tensor(0.4610))
+
         """
         return self._self_reduction(torch.mean, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.sum)
     def sum(self, dim: Optional[DimT] = None, **kwargs):
-        """Like torch.sum but for keyed tensor, dim may optionally be a keyed
+        """Like `torch.sum` but for keyed tensor.
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
@@ -166,24 +178,41 @@ class KeyedTensor(AttyDict):
 
         Example:
             >>> import torch
+            >>> _ = torch.manual_seed(0)
             >>> from keyedtensor import KeyedTensor
             >>>
-            >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt
+            KeyedTensor(a=tensor([[0.4963, 0.7682, 0.0885],
+                                  [0.1320, 0.3074, 0.6341],
+                                  [0.4901, 0.8964, 0.4556]]),
+                        b=tensor([0.6323, 0.3489, 0.4017]))
+
+            with dim unspecified we apply `sum` over all values in the `KeyedTensor`:
+
             >>> kt.sum()
             tensor(5.6516)
+
+            specify a numeric dim to apply `sum` along each keyed tensor:
 
             >>> kt.sum(dim=-1)
             KeyedTensor(a=tensor([1.3530, 1.0735, 1.8422]), b=tensor(1.3829))
 
+            or specify `key` to apply `sum` per keyed tensor:
+
             >>> kt.sum(dim='key')
+            KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
+
+            calling torch.sum on a KeyedTensor workds as expected:
+
+            >>> torch.sum(kt, dim='key')
             KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
         """
         return self._self_reduction(torch.sum, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.var)
     def var(self, dim: Optional[DimT] = None, **kwargs):
-        """Like torch.var but for keyed tensor, dim may optionally be a keyed
+        """Like `torch.var` but for keyed tensor.
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
@@ -191,17 +220,34 @@ class KeyedTensor(AttyDict):
 
         Example:
             >>> import torch
+            >>> _ = torch.manual_seed(0)
             >>> from keyedtensor import KeyedTensor
             >>>
-            >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt
+            KeyedTensor(a=tensor([[0.4963, 0.7682, 0.0885],
+                                  [0.1320, 0.3074, 0.6341],
+                                  [0.4901, 0.8964, 0.4556]]),
+                        b=tensor([0.6323, 0.3489, 0.4017]))
+
+            with dim unspecified we apply `var` over all values in the `KeyedTensor`:
+
             >>> kt.var()
             tensor(0.0574)
+
+            specify a numeric dim to apply `var` along each keyed tensor:
 
             >>> kt.var(dim=-1)
             KeyedTensor(a=tensor([0.1171, 0.0649, 0.0601]), b=tensor(0.0227))
 
+            or specify `key` to apply `var` per keyed tensor:
+
             >>> kt.var(dim='key')
+            KeyedTensor(a=tensor(0.0731), b=tensor(0.0227))
+
+            calling torch.var on a KeyedTensor workds as expected:
+
+            >>> torch.var(kt, dim='key')
             KeyedTensor(a=tensor(0.0731), b=tensor(0.0227))
         """
         return self._self_reduction(torch.var, dim=dim, **kwargs)
@@ -252,7 +298,7 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.std)
     def std(self, dim: Optional[DimT] = None, **kwargs):
-        """Like torch.std but for keyed tensor, dim may optionally be a keyed
+        """Like `torch.std` but for keyed tensor.
 
         Args:
             dim: the dimension to reduce -this may optionally be the string
@@ -260,17 +306,34 @@ class KeyedTensor(AttyDict):
 
         Example:
             >>> import torch
+            >>> _ = torch.manual_seed(0)
             >>> from keyedtensor import KeyedTensor
             >>>
-            >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt
+            KeyedTensor(a=tensor([[0.4963, 0.7682, 0.0885],
+                                  [0.1320, 0.3074, 0.6341],
+                                  [0.4901, 0.8964, 0.4556]]),
+                        b=tensor([0.6323, 0.3489, 0.4017]))
+
+            with dim unspecified we apply `std` over all values in the `KeyedTensor`:
+
             >>> kt.std()
             tensor(0.2395)
+
+            specify a numeric dim to apply `std` along each keyed tensor:
 
             >>> kt.std(dim=-1)
             KeyedTensor(a=tensor([0.3421, 0.2548, 0.2452]), b=tensor(0.1507))
 
+            or specify `key` to apply `std` per keyed tensor:
+
             >>> kt.std(dim='key')
+            KeyedTensor(a=tensor(0.2704), b=tensor(0.1507))
+
+            calling torch.std on a KeyedTensor workds as expected:
+
+            >>> torch.std(kt, dim='key')
             KeyedTensor(a=tensor(0.2704), b=tensor(0.1507))
         """
         return self._self_reduction(torch.std, dim=dim, **kwargs)
@@ -306,6 +369,44 @@ class KeyedTensor(AttyDict):
 
     @torchfunc_registry.register(torch.prod)
     def prod(self, dim: Optional[DimT] = None, **kwargs):
+        """Like `torch.prod` but for keyed tensor.
+
+        Args:
+            dim: the dimension to reduce -this may optionally be the string
+                literal 'key' to reduce by key. Defaults to None.
+
+        Example:
+            >>> import torch
+            >>> _ = torch.manual_seed(0)
+            >>> from keyedtensor import KeyedTensor
+            >>>
+            >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt
+            KeyedTensor(a=tensor([[0.4963, 0.7682, 0.0885],
+                                  [0.1320, 0.3074, 0.6341],
+                                  [0.4901, 0.8964, 0.4556]]),
+                        b=tensor([0.6323, 0.3489, 0.4017]))
+
+            with dim unspecified we apply `prod` over all values in the `KeyedTensor`:
+
+            >>> kt.prod()
+            tensor(1.5400e-05)
+
+            specify a numeric dim to apply `prod` along each keyed tensor:
+
+            >>> kt.prod(dim=-1)
+            KeyedTensor(a=tensor([0.0337, 0.0257, 0.2002]), b=tensor(0.0886))
+
+            or specify `key` to apply `prod` per keyed tensor:
+
+            >>> kt.prod(dim='key')
+            KeyedTensor(a=tensor(0.0002), b=tensor(0.0886))
+
+            calling torch.prod on a KeyedTensor workds as expected:
+
+            >>> torch.prod(kt, dim='key')
+            KeyedTensor(a=tensor(0.0002), b=tensor(0.0886))
+        """
         return self._self_reduction(torch.prod, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.unbind)

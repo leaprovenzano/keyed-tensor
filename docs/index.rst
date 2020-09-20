@@ -8,11 +8,12 @@ keyedtensor docs
 .. toctree::
    :maxdepth: 2
 
-.. autosummary::
-   :toctree: _autosummary
-   :template: base.rst
 
-   KeyedTensor
+.. autoclass:: KeyedTensor
+    :inherited-members:
+    :members:
+    :undoc-members:
+
 
 
 Indices and tables

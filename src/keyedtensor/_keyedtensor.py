@@ -1,5 +1,5 @@
 import sys
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Callable
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
@@ -20,14 +20,6 @@ ValidOtherT = Union['KeyedTensor', int, float, bool, torch.Tensor, np.ndarray]
 
 
 # patterns
-
-
-def _self_reduction(kt: 'KeyedTensor', op, dim: Optional[DimT] = None, **kwargs):
-    if dim is None:
-        return op(torch.cat(list(map(torch.flatten, kt.values()))), **kwargs)
-    elif dim == 'key':
-        return _self_apply_with_args(kt, op, **kwargs)
-    return _self_apply_with_args(kt, op, dim=dim, **kwargs)
 
 
 def _self_apply_with_args(kt: 'KeyedTensor', op, *args, **kwargs):
@@ -90,6 +82,16 @@ class KeyedTensor(AttyDict):
         kwargs = kwargs if kwargs is not None else {}
         return self.torchfunc_registry[func](*args, **kwargs)
 
+    def _self_reduction(self, op: Callable, dim: Optional[DimT] = None, **kwargs):
+        if dim is None:
+            return op(torch.cat(list(map(torch.flatten, self.values()))), **kwargs)
+        elif dim == 'key':
+            return _self_apply_with_args(self, op, **kwargs)
+        return _self_apply_with_args(self, op, dim=dim, **kwargs)
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}({", ".join(f"{k}={t!r}" for k, t in self.items())})'
+
     def __abs__(self):
         return self.abs()
 
@@ -110,7 +112,7 @@ class KeyedTensor(AttyDict):
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
         """
-        return _self_reduction(self, torch.all, dim=dim, **kwargs)
+        return self._self_reduction(torch.all, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.any)
     def any(self, dim: Optional[DimT] = None, **kwargs):
@@ -120,7 +122,7 @@ class KeyedTensor(AttyDict):
             dim: the dimension to reduce -this may optionally be the string
                 literal 'key' to reduce by key. Defaults to None.
         """
-        return _self_reduction(self, torch.any, dim=dim, **kwargs)
+        return self._self_reduction(torch.any, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.mean)
     def mean(self, dim: Optional[DimT] = None, **kwargs):
@@ -145,7 +147,7 @@ class KeyedTensor(AttyDict):
             >>> kt.mean(dim='key')
             {'a': tensor(0.4743), 'b': tensor(0.4610)}
         """
-        return _self_reduction(self, torch.mean, dim=dim, **kwargs)
+        return self._self_reduction(torch.mean, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.sum)
     def sum(self, dim: Optional[DimT] = None, **kwargs):
@@ -170,7 +172,7 @@ class KeyedTensor(AttyDict):
             >>> kt.sum(dim='key')
             {'a': tensor(4.2687), 'b': tensor(1.3829)}
         """
-        return _self_reduction(self, torch.sum, dim=dim, **kwargs)
+        return self._self_reduction(torch.sum, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.var)
     def var(self, dim: Optional[DimT] = None, **kwargs):
@@ -195,7 +197,7 @@ class KeyedTensor(AttyDict):
             >>> kt.var(dim='key')
             {'a': tensor(0.0731), 'b': tensor(0.0227)}
         """
-        return _self_reduction(self, torch.var, dim=dim, **kwargs)
+        return self._self_reduction(torch.var, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmax)
     def argmax(self, dim: Optional[DimT] = None, **kwargs):
@@ -217,7 +219,7 @@ class KeyedTensor(AttyDict):
             >>> kt.argmax(dim='key')
             {'a': tensor(7), 'b': tensor(0)}
         """
-        return _self_reduction(self, torch.argmax, dim=dim, **kwargs)
+        return self._self_reduction(torch.argmax, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.argmin)
     def argmin(self, dim: Optional[DimT] = None, **kwargs):
@@ -239,7 +241,7 @@ class KeyedTensor(AttyDict):
             >>> kt.argmin(dim='key')
             {'a': tensor(2), 'b': tensor(1)}
         """
-        return _self_reduction(self, torch.argmin, dim=dim, **kwargs)
+        return self._self_reduction(torch.argmin, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.std)
     def std(self, dim: Optional[DimT] = None, **kwargs):
@@ -264,7 +266,7 @@ class KeyedTensor(AttyDict):
             >>> kt.std(dim='key')
             {'a': tensor(0.2704), 'b': tensor(0.1507)}
         """
-        return _self_reduction(self, torch.std, dim=dim, **kwargs)
+        return self._self_reduction(torch.std, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.norm)
     def norm(self, p='fro', dim: Optional[DimT] = None, **kwargs):
@@ -293,11 +295,11 @@ class KeyedTensor(AttyDict):
             >>> kt.norm(p=1, dim='key')
             {'a': tensor(4.2687), 'b': tensor(1.3829)}
         """
-        return _self_reduction(self, torch.norm, dim=dim, **kwargs, p=p)
+        return self._self_reduction(torch.norm, dim=dim, **kwargs, p=p)
 
     @torchfunc_registry.register(torch.prod)
     def prod(self, dim: Optional[DimT] = None, **kwargs):
-        return _self_reduction(self, torch.prod, dim=dim, **kwargs)
+        return self._self_reduction(torch.prod, dim=dim, **kwargs)
 
     @torchfunc_registry.register(torch.unbind)
     def unbind(self) -> List['KeyedTensor']:

@@ -160,7 +160,7 @@ class KeyedTensor(AttyDict):
             >>> kt.mean(dim='key')
             KeyedTensor(a=tensor(0.4743), b=tensor(0.4610))
 
-            calling torch.mean on a KeyedTensor workds as expected:
+            calling torch.mean on a KeyedTensor works as expected:
 
             >>> torch.mean(kt, dim='key')
             KeyedTensor(a=tensor(0.4743), b=tensor(0.4610))
@@ -203,7 +203,7 @@ class KeyedTensor(AttyDict):
             >>> kt.sum(dim='key')
             KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
 
-            calling torch.sum on a KeyedTensor workds as expected:
+            calling torch.sum on a KeyedTensor works as expected:
 
             >>> torch.sum(kt, dim='key')
             KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
@@ -245,7 +245,7 @@ class KeyedTensor(AttyDict):
             >>> kt.var(dim='key')
             KeyedTensor(a=tensor(0.0731), b=tensor(0.0227))
 
-            calling torch.var on a KeyedTensor workds as expected:
+            calling torch.var on a KeyedTensor works as expected:
 
             >>> torch.var(kt, dim='key')
             KeyedTensor(a=tensor(0.0731), b=tensor(0.0227))
@@ -331,7 +331,7 @@ class KeyedTensor(AttyDict):
             >>> kt.std(dim='key')
             KeyedTensor(a=tensor(0.2704), b=tensor(0.1507))
 
-            calling torch.std on a KeyedTensor workds as expected:
+            calling torch.std on a KeyedTensor works as expected:
 
             >>> torch.std(kt, dim='key')
             KeyedTensor(a=tensor(0.2704), b=tensor(0.1507))
@@ -402,7 +402,7 @@ class KeyedTensor(AttyDict):
             >>> kt.prod(dim='key')
             KeyedTensor(a=tensor(0.0002), b=tensor(0.0886))
 
-            calling torch.prod on a KeyedTensor workds as expected:
+            calling torch.prod on a KeyedTensor works as expected:
 
             >>> torch.prod(kt, dim='key')
             KeyedTensor(a=tensor(0.0002), b=tensor(0.0886))

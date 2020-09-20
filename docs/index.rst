@@ -1,7 +1,6 @@
 keyedtensor docs
 ====================================
 
-.. include:: ../README.rst
 
 .. currentmodule:: keyedtensor
 

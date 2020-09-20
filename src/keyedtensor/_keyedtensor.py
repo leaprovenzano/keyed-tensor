@@ -13,6 +13,7 @@ import torch
 from collectionish import AttyDict
 
 from keyedtensor._registry import TorchFuncRegistry
+from keyedtensor._repr_utils import keyedtensor_str
 
 
 DimT = Union[Literal['keys'], int]
@@ -90,7 +91,7 @@ class KeyedTensor(AttyDict):
         return _self_apply_with_args(self, op, dim=dim, **kwargs)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({", ".join(f"{k}={t!r}" for k, t in self.items())})'
+        return keyedtensor_str(self)
 
     def __abs__(self):
         return self.abs()
@@ -134,18 +135,24 @@ class KeyedTensor(AttyDict):
 
         Example:
             >>> import torch
+            >>> _ = torch.manual_seed(0)
             >>> from keyedtensor import KeyedTensor
             >>>
-            >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
+            >>> kt
+            KeyedTensor(a=tensor([[0.4963, 0.7682, 0.0885],
+                                  [0.1320, 0.3074, 0.6341],
+                                  [0.4901, 0.8964, 0.4556]]),
+                        b=tensor([0.6323, 0.3489, 0.4017]))
+
             >>> kt.mean()
             tensor(0.4710)
 
             >>> print(kt.mean(dim=-1))
-            {'a': tensor([0.4510, 0.3578, 0.6141]), 'b': tensor(0.4610)}
+            KeyedTensor(a=tensor([0.4510, 0.3578, 0.6141]), b=tensor(0.4610))
 
             >>> kt.mean(dim='key')
-            {'a': tensor(0.4743), 'b': tensor(0.4610)}
+            KeyedTensor(a=tensor(0.4743), b=tensor(0.4610))
         """
         return self._self_reduction(torch.mean, dim=dim, **kwargs)
 
@@ -167,10 +174,10 @@ class KeyedTensor(AttyDict):
             tensor(5.6516)
 
             >>> kt.sum(dim=-1)
-            {'a': tensor([1.3530, 1.0735, 1.8422]), 'b': tensor(1.3829)}
+            KeyedTensor(a=tensor([1.3530, 1.0735, 1.8422]), b=tensor(1.3829))
 
             >>> kt.sum(dim='key')
-            {'a': tensor(4.2687), 'b': tensor(1.3829)}
+            KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
         """
         return self._self_reduction(torch.sum, dim=dim, **kwargs)
 
@@ -192,10 +199,10 @@ class KeyedTensor(AttyDict):
             tensor(0.0574)
 
             >>> kt.var(dim=-1)
-            {'a': tensor([0.1171, 0.0649, 0.0601]), 'b': tensor(0.0227)}
+            KeyedTensor(a=tensor([0.1171, 0.0649, 0.0601]), b=tensor(0.0227))
 
             >>> kt.var(dim='key')
-            {'a': tensor(0.0731), 'b': tensor(0.0227)}
+            KeyedTensor(a=tensor(0.0731), b=tensor(0.0227))
         """
         return self._self_reduction(torch.var, dim=dim, **kwargs)
 
@@ -214,10 +221,10 @@ class KeyedTensor(AttyDict):
             >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
             >>> kt.argmax(dim=-1)
-            {'a': tensor([1, 2, 1]), 'b': tensor(0)}
+            KeyedTensor(a=tensor([1, 2, 1]), b=tensor(0))
 
             >>> kt.argmax(dim='key')
-            {'a': tensor(7), 'b': tensor(0)}
+            KeyedTensor(a=tensor(7), b=tensor(0))
         """
         return self._self_reduction(torch.argmax, dim=dim, **kwargs)
 
@@ -236,10 +243,10 @@ class KeyedTensor(AttyDict):
             >>> _ = torch.manual_seed(0)
             >>> kt = KeyedTensor(a=torch.rand(3, 3), b=torch.rand(3))
             >>> kt.argmin(dim=-1)
-            {'a': tensor([2, 0, 2]), 'b': tensor(1)}
+            KeyedTensor(a=tensor([2, 0, 2]), b=tensor(1))
 
             >>> kt.argmin(dim='key')
-            {'a': tensor(2), 'b': tensor(1)}
+            KeyedTensor(a=tensor(2), b=tensor(1))
         """
         return self._self_reduction(torch.argmin, dim=dim, **kwargs)
 
@@ -261,10 +268,10 @@ class KeyedTensor(AttyDict):
             tensor(0.2395)
 
             >>> kt.std(dim=-1)
-            {'a': tensor([0.3421, 0.2548, 0.2452]), 'b': tensor(0.1507)}
+            KeyedTensor(a=tensor([0.3421, 0.2548, 0.2452]), b=tensor(0.1507))
 
             >>> kt.std(dim='key')
-            {'a': tensor(0.2704), 'b': tensor(0.1507)}
+            KeyedTensor(a=tensor(0.2704), b=tensor(0.1507))
         """
         return self._self_reduction(torch.std, dim=dim, **kwargs)
 
@@ -287,13 +294,13 @@ class KeyedTensor(AttyDict):
             tensor(1.8145)
 
             >>> kt.norm(dim=-1)
-            {'a': tensor([0.9188, 0.7169, 1.1187]), 'b': tensor(0.8264)}
+            KeyedTensor(a=tensor([0.9188, 0.7169, 1.1187]), b=tensor(0.8264))
 
             >>> kt.norm(dim='key')
-            {'a': tensor(1.6154), 'b': tensor(0.8264)}
+            KeyedTensor(a=tensor(1.6154), b=tensor(0.8264))
 
             >>> kt.norm(p=1, dim='key')
-            {'a': tensor(4.2687), 'b': tensor(1.3829)}
+            KeyedTensor(a=tensor(4.2687), b=tensor(1.3829))
         """
         return self._self_reduction(torch.norm, dim=dim, **kwargs, p=p)
 

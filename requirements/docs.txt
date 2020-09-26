@@ -3,3 +3,4 @@ sphinxcontrib-napoleon
 sphinx_autodoc_typehints
 m2r
 sphinx_material
+sphinx_autodoc_typehints

@@ -14,7 +14,7 @@ from collectionish import AttyDict
 
 from keyedtensor._registry import TorchFuncRegistry
 from keyedtensor._repr_utils import keyedtensor_str
-
+from keyedtensor._keyedsize import KeyedSize
 
 DimT = Union[Literal['keys'], int]
 ValidOtherT = Union['KeyedTensor', int, float, bool, torch.Tensor, np.ndarray]
@@ -99,6 +99,25 @@ class KeyedTensor(AttyDict):
 
     def dim(self):
         return self._apply_out_of_place(lambda x: x.dim)
+
+    def size(self) -> KeyedSize:
+        return KeyedSize(self.keys(), map(lambda x: x.shape, self.values()))
+
+    @property
+    def shape(self) -> KeyedSize:
+        """return a KeyedSize for this KeyedTensor
+
+        see `keyedtensor.KeyedSize` docs for more details on working with `KeyedSize`.
+
+        Example:
+            >>> from keyedtensor import KeyedTensor
+            >>> import torch
+            >>>
+            >>> x = KeyedTensor(a=torch.rand(3, 4), b=torch.rand(3, 1), c=torch.rand(3))
+            >>> x.size()
+            KeyedSize(a=torch.Size([3, 4]), b=torch.Size([3, 1]), c=torch.Size([3]))
+        """
+        return self.size()
 
     # self magics
 

@@ -1,24 +1,19 @@
-keyedtensor docs
-====================================
-
+.. include:: readme.rst
 
 .. currentmodule:: keyedtensor
 
-
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
-
-.. autoclass:: KeyedTensor
-    :inherited-members:
-    :members:
-    :undoc-members:
+   KeyedTensor
+   contributing
+   authors
 
 
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

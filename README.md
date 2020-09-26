@@ -3,27 +3,15 @@
 keyed torch tensors
 
 ----
+[![pypi version](https://img.shields.io/pypi/v/keyedtensor.svg](https://pypi.python.org/pypi/keyedtensor)
 
-.. image:: https://img.shields.io/pypi/v/keyedtensor.svg
-    :target: https://pypi.python.org/pypi/keyedtensor
-    :alt: pypi version
+[![travis build](https://img.shields.io/travis/leaprovenzano/keyedtensor.svg](https://travis-ci.com/leaprovenzano/keyedtensor)
 
-.. image:: https://img.shields.io/travis/leaprovenzano/keyedtensor.svg
-    :target: https://travis-ci.com/leaprovenzano/keyedtensor
-    :alt: travis build
+[![documentation status](https://keyedtensor.readthedocs.io/en/latest/?badge=latest)](https://readthedocs.org/projects/keyedtensor/badge/?version=latest)
 
-.. image:: https://readthedocs.org/projects/keyedtensor/badge/?version=latest
-    :target: https://keyedtensor.readthedocs.io/en/latest/?badge=latest
-    :alt: documentation status
+[![coverage](https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg)](https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg)
 
-.. image:: https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/leaprovenzano/keyedtensor
-    :alt: coverage
-
-.. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
-    :target: https://hypothesis.readthedocs.io
-    :alt: hypothesis tested
-
+[![hypothesis tested](https://img.shields.io/badge/hypothesis-tested-brightgreen.svg)](https://hypothesis.readthedocs.io)
 
 ------------------------------------------------------------------------
 

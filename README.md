@@ -1,37 +1,35 @@
-[pypi version]: https://img.shields.io/pypi/v/keyedtensor.svg
-[1]: https://pypi.python.org/pypi/keyedtensor
-[travis build]: https://img.shields.io/travis/leaprovenzano/keyedtensor.svg
-[2]: https://travis-ci.com/leaprovenzano/keyedtensor
-[documentation status]: https://readthedocs.org/projects/keyedtensor/badge/?version=latest
-[3]: https://keyedtensor.readthedocs.io/en/latest/?badge=latest
-[coverage]: https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg
-[4]: https://codecov.io/gh/leaprovenzano/keyedtensor
-[hypothesis tested]: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
-[5]: https://hypothesis.readthedocs.io
-[docs]: https://keyedtensor.readthedocs.io
-
-
 # keyedtensor
 
 keyed torch tensors
 
 ----
 
-[![pypi version][]][1]
+.. image:: https://img.shields.io/pypi/v/keyedtensor.svg
+    :target: https://pypi.python.org/pypi/keyedtensor
+    :alt: pypi version
 
-[![travis build][]][2]
+.. image:: https://img.shields.io/travis/leaprovenzano/keyedtensor.svg
+    :target: https://travis-ci.com/leaprovenzano/keyedtensor
+    :alt: travis build
 
-[![documentation status][]][3]
+.. image:: https://readthedocs.org/projects/keyedtensor/badge/?version=latest
+    :target: https://keyedtensor.readthedocs.io/en/latest/?badge=latest
+    :alt: documentation status
 
-[![coverage][]][4]
+.. image:: https://codecov.io/gh/leaprovenzano/keyedtensor/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/leaprovenzano/keyedtensor
+    :alt: coverage
 
-[![hypothesis tested][]][5]
+.. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
+    :target: https://hypothesis.readthedocs.io
+    :alt: hypothesis tested
+
 
 ------------------------------------------------------------------------
 
 -   *Free software*: MIT license
--   *Documentation*: [docs][]
--   *Supported Python Versions*: &gt;=3.7
+-   *Documentation*: [docs](https://keyedtensor.readthedocs.io)
+-   *Supported Python Versions*: >=3.7
 
 ------------------------------------------------------------------------
 
@@ -47,7 +45,7 @@ Install the latest stable version with pip:
 
 ## Checkout the docs:
 
-It's best to checkout the [docs][]. There you'll find detailed
+It's best to checkout the [docs](https://keyedtensor.readthedocs.io). There you'll find detailed
 documentation of keyedtensor}'s features and lots of examples of how to
 use them.
 

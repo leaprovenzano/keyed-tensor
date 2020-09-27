@@ -8,6 +8,7 @@
 
    KeyedTensor
    ops
+   hooks
    KeyedSize
    contributing
    authors

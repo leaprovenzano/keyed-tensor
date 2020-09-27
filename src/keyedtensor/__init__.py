@@ -8,3 +8,4 @@ __version__ = '0.3.0'
 
 from ._keyedtensor import KeyedTensor
 from .ops import cat, stack
+from .hooks import KeyedTensorOutputHook

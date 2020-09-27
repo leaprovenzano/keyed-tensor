@@ -7,6 +7,7 @@
    :caption: Contents:
 
    KeyedTensor
+   ops
    KeyedSize
    contributing
    authors
